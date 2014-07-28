@@ -1,0 +1,33 @@
+---
+
+#manual
+#wget -qO- https://get.docker.io/gpg | apt-key add -
+#shell: echo deb http://get.docker.io/ubuntu docker main > /etc/apt/sources.list.d/docker.list
+#apt-get install lxc-docker
+
+- name: Install docker environment
+  apt: name={{ item }} state=present
+  with_items:
+    - docker
+    - python3-docker
+  when: ansible_distribution == 'Debian' and ansible_distribution_version=='8'
+
+- name: Install gpg keys for https://get.docker.io/gpg for Ubunttu
+  shell: wget -qO- https://get.docker.io/gpg | apt-key add -
+  when: ansible_distribution == 'Ubuntu'
+
+- name: Install https://get.docker.io/gpg for Ubunttu
+  shell: echo deb http://get.docker.io/ubuntu docker main > /etc/apt/sources.list.d/docker.list
+  when: ansible_distribution == 'Ubuntu'
+
+- name: Install docker environment
+  apt: name={{ item }} state=present update_cache=yes
+  with_items:
+    - lxc-docker
+    - python-pip
+  when: ansible_distribution == 'Ubuntu'
+
+- name: Install docker client for python in Ubuntu
+  pip: name=docker-py
+  when: ansible_distribution == 'Ubuntu'
+
